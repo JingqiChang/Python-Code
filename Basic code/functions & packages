@@ -16,3 +16,78 @@ print(full)
 --->
 [20.0, 18.0, 11.25, 10.75, 9.5]
 [11.25, 18.0, 20.0, 10.75, 9.5]
+
+# upper(), low(), count()
+place = "poolhouse"
+
+# Use upper() on place: place_up
+place_up = place.upper()
+
+# Print out place and place_up
+print(place)
+print(place_up)
+
+# Print out the number of o's in place
+print(place.count('o'))
+--->
+poolhouse
+POOLHOUSE
+3
+
+
+#index(), count()
+areas = [11.25, 18.0, 20.0, 10.75, 9.50]
+
+# Print out the index of the element 20.0
+print(areas.index(20.0))
+
+# Print out how often 9.50 appears in areas
+print(areas.count(9.50))
+--->
+2
+1
+
+
+#append() to extend list, reverse()
+areas = [11.25, 18.0, 20.0, 10.75, 9.50]
+
+# Use append twice to add poolhouse and garage size
+areas.append(24.5)
+areas.append(15.45)
+
+# Print out areas
+print(areas)
+
+# Reverse the orders of the elements in areas,Use the reverse() method to reverse the order of the elements in areas
+areas.reverse()
+
+# Print out areas
+print(areas)
+--->
+[11.25, 18.0, 20.0, 10.75, 9.5, 24.5, 15.45]
+[15.45, 24.5, 9.5, 10.75, 20.0, 18.0, 11.25]
+
+
+#import math package
+r = 0.43
+
+# Import the math package
+import math
+
+C = 2*math.pi*r
+A = math.pi*r**2
+print("Circumference: " + str(C))
+print("Area: " + str(A))
+--->
+Circumference: 2.701769682087222
+Area: 0.5808804816487527
+
+
+# calculate radians
+from math import radians
+r = 192500
+# Travel distance of Moon over 12 degrees.
+dist = r*radians(12)
+print(dist)
+--->
+40317.10572106901
