@@ -1,0 +1,18 @@
+#basic funtions: use int() to convert data to an integer
+str()
+int()
+len()
+bool()
+float()
+
+#check functions
+help(max)
+?max
+
+#sort function
+full_sorted = sorted(full,reverse = True)
+print(full_sorted)
+print(full)
+--->
+[20.0, 18.0, 11.25, 10.75, 9.5]
+[11.25, 18.0, 20.0, 10.75, 9.5]
