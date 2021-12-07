@@ -319,3 +319,156 @@ Iraq    Baghdad   2013-05-01      28.673
 
 
 
+# Use Boolean conditions to subset temperatures for rows in 2010 and 2011
+temperatures_bool = temperatures[(temperatures['date'] >= '2010-01-01') & (temperatures['date'] <= '2011-12-31')]
+print(temperatures_bool)
+
+# Set date as an index and sort the index
+temperatures_ind = temperatures.set_index('date').sort_index()
+
+# Use .loc[] to subset temperatures_ind for rows in 2010 and 2011
+print(temperatures_ind.loc['2010':'2011'])
+
+# Use .loc[] to subset temperatures_ind for rows from Aug 2010 to Feb 2011
+print(temperatures_ind.loc['2010-08':'2011-02-28'])
+--->
+            date     city        country  avg_temp_c
+120   2010-01-01  Abidjan  Côte D'Ivoire      28.270
+121   2010-02-01  Abidjan  Côte D'Ivoire      29.262
+122   2010-03-01  Abidjan  Côte D'Ivoire      29.596
+123   2010-04-01  Abidjan  Côte D'Ivoire      29.068
+124   2010-05-01  Abidjan  Côte D'Ivoire      28.258
+...          ...      ...            ...         ...
+16474 2011-08-01     Xian          China      23.069
+16475 2011-09-01     Xian          China      16.775
+16476 2011-10-01     Xian          China      12.587
+16477 2011-11-01     Xian          China       7.543
+16478 2011-12-01     Xian          China      -0.490
+
+[2400 rows x 4 columns]
+                  city    country  avg_temp_c
+date                                         
+2010-01-01  Faisalabad   Pakistan      11.810
+2010-01-01   Melbourne  Australia      20.016
+2010-01-01   Chongqing      China       7.921
+2010-01-01   São Paulo     Brazil      23.738
+2010-01-01   Guangzhou      China      14.136
+...                ...        ...         ...
+2011-12-01      Nagoya      Japan       6.476
+2011-12-01   Hyderabad      India      23.613
+2011-12-01        Cali   Colombia      21.559
+2011-12-01        Lima       Peru      18.293
+2011-12-01     Bangkok   Thailand      25.021
+
+[2400 rows x 3 columns]
+                city        country  avg_temp_c
+date                                           
+2010-08-01  Calcutta          India      30.226
+2010-08-01      Pune          India      24.941
+2010-08-01     Izmir         Turkey      28.352
+2010-08-01   Tianjin          China      25.543
+2010-08-01    Manila    Philippines      27.101
+...              ...            ...         ...
+2011-02-01     Kabul    Afghanistan       3.914
+2011-02-01   Chicago  United States       0.276
+2011-02-01    Aleppo          Syria       8.246
+2011-02-01     Delhi          India      18.136
+2011-02-01   Rangoon          Burma      26.631
+
+[700 rows x 3 columns]
+
+
+
+###Subset by row/column
+# Get 23rd row, 2nd column (index 22, 1)
+print(temperatures.iloc[22,1])
+
+# Use slicing to get the first 5 rows
+print(temperatures.iloc[:5,:])
+
+# Use slicing to get columns 3 to 4
+print(temperatures.iloc[:,2:4])
+
+# Use slicing in both directions at once
+print(temperatures.iloc[:5,2:4])
+--->
+# the first column in python is index, not the 0th column
+
+
+
+###pivot table
+# Add a year column to temperatures
+temperatures['year']=temperatures['date'].dt.year
+
+# Pivot avg_temp_c by country and city vs year
+temp_by_country_city_vs_year = temperatures.pivot_table('avg_temp_c',index=['country','city'],columns='year')
+print(temp_by_country_city_vs_year)
+--->
+
+year                              2000    2001    2002    2003    2004  ...    2009    2010    2011    2012    2013
+country       city                                                      ...                                        
+Afghanistan   Kabul             15.823  15.848  15.715  15.133  16.128  ...  15.093  15.676  15.812  14.510  16.206
+Angola        Luanda            24.410  24.427  24.791  24.867  24.216  ...  24.325  24.440  24.151  24.240  24.554
+Australia     Melbourne         14.320  14.180  14.076  13.986  13.742  ...  14.647  14.232  14.191  14.269  14.742
+              Sydney            17.567  17.854  17.734  17.592  17.870  ...  18.176  17.999  17.713  17.474  18.090
+Bangladesh    Dhaka             25.905  25.931  26.095  25.927  26.136  ...  26.536  26.648  25.803  26.284  26.587
+...                                ...     ...     ...     ...     ...  ...     ...     ...     ...     ...     ...
+United States Chicago           11.090  11.703  11.532  10.482  10.943  ...  10.298  11.816  11.214  12.821  11.587
+              Los Angeles       16.643  16.466  16.430  16.945  16.553  ...  16.677  15.887  15.875  17.090  18.121
+              New York           9.969  10.931  11.252   9.836  10.389  ...  10.142  11.358  11.272  11.971  12.164
+Vietnam       Ho Chi Minh City  27.589  27.832  28.065  27.828  27.687  ...  27.853  28.282  27.675  28.249  28.455
+Zimbabwe      Harare            20.284  20.861  21.079  20.889  20.308  ...  20.524  21.166  20.782  20.523  19.756
+
+[100 rows x 14 columns]
+
+print(temperatures)
+--->
+            date     city        country  avg_temp_c  year
+0     2000-01-01  Abidjan  Côte D'Ivoire      27.293  2000
+1     2000-02-01  Abidjan  Côte D'Ivoire      27.685  2000
+2     2000-03-01  Abidjan  Côte D'Ivoire      29.061  2000
+3     2000-04-01  Abidjan  Côte D'Ivoire      28.162  2000
+4     2000-05-01  Abidjan  Côte D'Ivoire      27.547  2000
+...          ...      ...            ...         ...   ...
+16495 2013-05-01     Xian          China      18.979  2013
+16496 2013-06-01     Xian          China      23.522  2013
+16497 2013-07-01     Xian          China      25.251  2013
+16498 2013-08-01     Xian          China      24.528  2013
+16499 2013-09-01     Xian          China         NaN  2013
+
+[16500 rows x 5 columns]
+
+
+##subset pivot table
+# Subset for Egypt to India
+temp_by_country_city_vs_year.loc['Egypt':'India']
+
+# Subset for Egypt, Cairo to India, Delhi
+temp_by_country_city_vs_year.loc[('Egypt','Cairo'):('India','Delhi')]
+
+# Subset in both directions at once
+temp_by_country_city_vs_year.loc[('Egypt','Cairo'):('India','Delhi'),'2005':'2010']
+
+
+
+##calculate on pivot table
+# Get the worldwide mean temp by year
+mean_temp_by_year = temp_by_country_city_vs_year.mean(axis='index')
+
+# Filter for the year that had the highest mean temp
+print(mean_temp_by_year[mean_temp_by_year == mean_temp_by_year.max()])
+
+# Get the mean temp by city
+mean_temp_by_city = temp_by_country_city_vs_year.mean(axis="columns")
+
+# Filter for the city that had the lowest mean temp
+print(mean_temp_by_city[mean_temp_by_city == mean_temp_by_city.min()])
+--->
+year
+2013    20.312
+dtype: float64
+
+country  city  
+China    Harbin    4.877
+dtype: float64
+
