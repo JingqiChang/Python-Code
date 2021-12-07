@@ -1,0 +1,218 @@
+sales['weekly_sales'].mean()
+sales['weekly_sales'].median()
+sales['date'].max()
+sales['date'].min()
+
+##.agg() method allows you to apply your own custom functions to a DataFrame, as well as apply functions to more than one column of a DataFrame at once, making your aggregations super-efficient. 
+df['column'].agg(function)
+
+def iqr(column):
+    return column.quantile(0.75) - column.quantile(0.25)
+# Print IQR of the temperature_c column
+print(sales['temperature_c'].agg(iqr))
+--->
+16.583333333333336
+
+# Update to print IQR of temperature_c, fuel_price_usd_per_l, & unemployment
+print(sales[["temperature_c", "fuel_price_usd_per_l", "unemployment"]].agg(iqr))
+--->
+temperature_c           16.583
+fuel_price_usd_per_l     0.073
+unemployment             0.565
+dtype: float64
+
+# Update to print IQR and median of temperature_c, fuel_price_usd_per_l, & unemployment
+print(sales[["temperature_c", "fuel_price_usd_per_l", "unemployment"]].agg([iqr,np.median]))
+--->
+        temperature_c  fuel_price_usd_per_l  unemployment
+iqr            16.583                 0.073         0.565
+median         16.967                 0.743         8.099
+
+##cumulative statistics
+sales_1_1 = sales_1_1.sort_values('date')
+# Get the cumulative sum of weekly_sales, add as cum_weekly_sales col
+sales_1_1['cum_weekly_sales'] = sales_1_1['weekly_sales'].cumsum()
+# Get the cumulative max of weekly_sales, add as cum_max_sales col
+sales_1_1['cum_max_sales'] = sales_1_1['weekly_sales'].cummax()
+# See the columns you calculated
+print(sales_1_1[["date", "weekly_sales", "cum_weekly_sales", "cum_max_sales"]])
+--->
+         date  weekly_sales  cum_weekly_sales  cum_max_sales
+0  2010-02-05      24924.50          24924.50       24924.50
+1  2010-03-05      21827.90          46752.40       24924.50
+2  2010-04-02      57258.43         104010.83       57258.43
+3  2010-05-07      17413.94         121424.77       57258.43
+4  2010-06-04      17558.09         138982.86       57258.43
+5  2010-07-02      16333.14         155316.00       57258.43
+6  2010-08-06      17508.41         172824.41       57258.43
+7  2010-09-03      16241.78         189066.19       57258.43
+8  2010-10-01      20094.19         209160.38       57258.43
+9  2010-11-05      34238.88         243399.26       57258.43
+10 2010-12-03      22517.56         265916.82       57258.43
+11 2011-01-07      15984.24         281901.06       57258.43
+
+
+# Drop duplicate store/type combinations
+store_types = sales.drop_duplicates(subset=['store','type'])
+print(store_types.head())
+
+# Drop duplicate store/department combinations
+store_depts = sales.drop_duplicates(subset=['store','department'])
+print(store_depts.head())
+
+# Subset the rows where is_holiday is True and drop duplicate dates
+holiday_dates = sales[sales['is_holiday']].drop_duplicates(subset='date')
+
+# Print date col of holiday_dates
+print(holiday_dates['date'])
+--->
+      store type  department       date  weekly_sales  is_holiday  temperature_c  fuel_price_usd_per_l  unemployment
+0         1    A           1 2010-02-05      24924.50       False          5.728                 0.679         8.106
+901       2    A           1 2010-02-05      35034.06       False          4.550                 0.679         8.324
+1798      4    A           1 2010-02-05      38724.42       False          6.533                 0.686         8.623
+2699      6    A           1 2010-02-05      25619.00       False          4.683                 0.679         7.259
+3593     10    B           1 2010-02-05      40212.84       False         12.411                 0.782         9.765
+    store type  department       date  weekly_sales  is_holiday  temperature_c  fuel_price_usd_per_l  unemployment
+0       1    A           1 2010-02-05      24924.50       False          5.728                 0.679         8.106
+12      1    A           2 2010-02-05      50605.27       False          5.728                 0.679         8.106
+24      1    A           3 2010-02-05      13740.12       False          5.728                 0.679         8.106
+36      1    A           4 2010-02-05      39954.04       False          5.728                 0.679         8.106
+48      1    A           5 2010-02-05      32229.38       False          5.728                 0.679         8.106
+498    2010-09-10
+691    2011-11-25
+2315   2010-02-12
+6735   2012-09-07
+6810   2010-12-31
+6815   2012-02-10
+6820   2011-09-09
+Name: date, dtype: datetime64[ns]
+
+
+##Group Summary
+# Calc total weekly sales
+sales_all = sales["weekly_sales"].sum()
+# Subset for type A stores, calc total weekly sales
+sales_A = sales[sales["type"] == "A"]["weekly_sales"].sum()
+# Subset for type B stores, calc total weekly sales
+sales_B = sales[sales['type']=='B']['weekly_sales'].sum()
+# Subset for type C stores, calc total weekly sales
+sales_C = sales[sales['type']=='C']['weekly_sales'].sum()
+# Get proportion for each type
+sales_propn_by_type = [sales_A, sales_B, sales_C] / sales_all
+print(sales_propn_by_type)
+--->
+[0.9097747 0.0902253 0.       ]
+
+
+# Group by type; calc total weekly sales
+sales_by_type = sales.groupby("type")["weekly_sales"].sum()
+# Get proportion for each type
+sales_propn_by_type = sales_by_type / sum(sales['weekly_sales'])
+print(sales_propn_by_type)
+--->
+type
+A    0.91
+B    0.09
+Name: weekly_sales, dtype: float64
+
+# From previous step
+sales_by_type = sales.groupby("type")["weekly_sales"].sum()
+# Group by type and is_holiday; calc total weekly sales
+sales_by_type_is_holiday = sales.groupby(['type','is_holiday'])['weekly_sales'].sum()
+print(sales_by_type_is_holiday)
+--->
+type  is_holiday
+A     False         2.337e+08
+      True          2.360e+04
+B     False         2.318e+07
+      True          1.621e+03
+Name: weekly_sales, dtype: float64
+
+import numpy as np
+# For each store type, aggregate weekly_sales: get min, max, mean, and median
+sales_stats = sales.groupby('type')['weekly_sales'].agg([min,max,np.mean,np.median])
+# Print sales_stats
+print(sales_stats)
+# For each store type, aggregate unemployment and fuel_price_usd_per_l: get min, max, mean, and median
+unemp_fuel_stats = sales.groupby('type')[['unemployment','fuel_price_usd_per_l']].agg([min,max,np.mean,np.median])
+# Print unemp_fuel_stats
+print(unemp_fuel_stats)
+--->
+         min        max       mean    median
+type                                        
+A    -1098.0  293966.05  23674.667  11943.92
+B     -798.0  232558.51  25696.678  13336.08
+     unemployment                      fuel_price_usd_per_l                     
+              min    max   mean median                  min    max   mean median
+type                                                                            
+A           3.879  8.992  7.973  8.067                0.664  1.107  0.745  0.735
+B           7.170  9.765  9.279  9.199                0.760  1.108  0.806  0.803
+
+
+
+###Pivot Table
+# Pivot for mean weekly_sales for each store type
+mean_sales_by_type = sales.pivot_table(values='weekly_sales', index='type')
+# Print mean_sales_by_type
+print(mean_sales_by_type)
+--->
+     weekly_sales
+type              
+A        23674.667
+B        25696.678
+
+import numpy as np
+# Pivot for mean and median weekly_sales for each store type
+mean_med_sales_by_type = sales.pivot_table(values='weekly_sales',index='type',aggfunc=[np.mean,np.median])
+# Print mean_med_sales_by_type
+print(mean_med_sales_by_type)
+--->
+             mean       median
+     weekly_sales weekly_sales
+type                          
+A       23674.667     11943.92
+B       25696.678     13336.08
+
+mean_sales_by_type_holiday = sales.pivot_table(values='weekly_sales',index='type',columns='is_holiday')
+# Print mean_sales_by_type_holiday
+print(mean_sales_by_type_holiday)
+--->
+is_holiday      False     True
+type                          
+A           23768.584  590.045
+B           25751.981  810.705
+
+# Print mean weekly_sales by department and type; fill missing values with 0
+print(sales.pivot_table(values='weekly_sales',index='department',columns='type',fill_value=0))
+--->
+type                 A           B
+department                        
+1            30961.725   44050.627
+2            67600.159  112958.527
+3            17160.003   30580.655
+4            44285.399   51219.654
+5            34821.011   63236.875
+...                ...         ...
+95          123933.787   77082.102
+96           21367.043    9528.538
+97           28471.267    5828.873
+98           12875.423     217.428
+99             379.124       0.000
+
+# Print the mean weekly_sales by department and type; fill missing values with 0s; sum all rows and cols
+print(sales.pivot_table(values="weekly_sales", index="department", columns="type", fill_value=0, margins=True))
+--->
+type                A           B        All
+department                                  
+1           30961.725   44050.627  32052.467
+2           67600.159  112958.527  71380.023
+3           17160.003   30580.655  18278.391
+4           44285.399   51219.654  44863.254
+5           34821.011   63236.875  37189.000
+...               ...         ...        ...
+96          21367.043    9528.538  20337.608
+97          28471.267    5828.873  26584.401
+98          12875.423     217.428  11820.590
+99            379.124       0.000    379.124
+All         23674.667   25696.678  23843.950
+
