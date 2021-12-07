@@ -1,0 +1,234 @@
+# Import matplotlib.pyplot with alias plt
+import matplotlib.pyplot as plt
+
+###bar chart
+# Look at the first few rows of data
+print(avocados.head())
+--->
+         date          type  year  avg_price   size    nb_sold
+0  2015-12-27  conventional  2015       0.95  small  9.627e+06
+1  2015-12-20  conventional  2015       0.98  small  8.710e+06
+2  2015-12-13  conventional  2015       0.93  small  9.855e+06
+3  2015-12-06  conventional  2015       0.89  small  9.405e+06
+4  2015-11-29  conventional  2015       0.99  small  8.095e+06
+
+# Get the total number of avocados sold of each size
+nb_sold_by_size = avocados.groupby('size')['nb_sold'].sum()
+
+# Create a bar plot of the number of avocados sold by size
+nb_sold_by_size.plot(kind='bar')
+
+# Show the plot
+plt.show()
+--->
+histogram group by size, aggregate by nb_sold(sum)
+
+
+###line chart
+# Get the total number of avocados sold on each date
+nb_sold_by_date = avocados.groupby('date')['nb_sold'].sum()
+# Create a line plot of the number of avocados sold by date
+nb_sold_by_date.plot(kind='line')
+# Show the plot
+plt.show()
+
+
+###scatter chart
+# Scatter plot of nb_sold vs avg_price with title
+avocados.plot(x='nb_sold',y='avg_price',kind='scatter',title='Number of avocados sold vs. average price')
+# Show the plot
+plt.show()
+
+
+###compared histogram chart
+# Histogram of conventional avg_price 
+avocados[avocados['type']=='conventional']['avg_price'].hist()
+# Histogram of organic avg_price
+avocados[avocados['type']=='organic']['avg_price'].hist()
+# Add a legend/color lable
+plt.legend(['conventional','organic'])
+# Show the plot
+plt.show()
+---> compare two type, X axis is avg_price, Y axis is count the number of this type of avocados with same avg_price(in one charts)
+
+# Modify bins to 20
+avocados[avocados["type"] == "conventional"]["avg_price"].hist(alpha=0.5,bins=20)
+# Modify bins to 20
+avocados[avocados["type"] == "organic"]["avg_price"].hist(alpha=0.5,bins=20)
+# Add a legend
+plt.legend(["conventional", "organic"])
+# Show the plot
+plt.show()
+---> alpha is the trnasparent of bar, bins is the size of the bar
+
+
+
+###find missing value
+import matplotlib.pyplot as plt
+# Check individual values for missing values
+print(avocados_2016.isna())
+--->
+     date  avg_price  total_sold  small_sold  large_sold  xl_sold  total_bags_sold  small_bags_sold  large_bags_sold  xl_bags_sold
+0   False      False       False       False       False    False            False            False            False         False
+1   False      False       False       False       False    False            False            False            False         False
+2   False      False       False       False        True    False            False            False            False         False
+3   False      False       False       False       False    False            False            False            False         False
+4   False      False       False       False       False     True            False            False            False         False
+
+# Check each column for missing values
+print(avocados_2016.isna().any())
+--->
+date               False
+avg_price          False
+total_sold         False
+small_sold          True
+large_sold          True
+xl_sold             True
+total_bags_sold    False
+small_bags_sold    False
+large_bags_sold    False
+xl_bags_sold       False
+dtype: bool
+# Bar plot of missing values by variable
+avocados_2016.isna().sum().plot(kind='bar')
+
+# Show plot
+plt.show()
+--->
+barchart, x axis is type of missing, y axis is count the number of missing value of each type
+
+
+
+###remove missing value
+# Remove rows with missing values
+avocados_complete = avocados_2016.dropna()
+# Check if any columns contain missing values
+print(avocados_complete.isna().any())
+--->
+date               False
+avg_price          False
+total_sold         False
+small_sold         False
+large_sold         False
+xl_sold            False
+total_bags_sold    False
+small_bags_sold    False
+large_bags_sold    False
+xl_bags_sold       False
+dtype: bool
+
+
+
+###replace missing value
+# List the columns with missing values
+cols_with_missing = ["small_sold", "large_sold", "xl_sold"]
+
+# Create histograms showing the distributions cols_with_missing
+avocados_2016[cols_with_missing].hist()
+
+# Show the plot
+plt.show()
+--->
+three histogram charts, three type with missing value
+
+# From previous step
+cols_with_missing = ["small_sold", "large_sold", "xl_sold"]
+avocados_2016[cols_with_missing].hist()
+plt.show()
+
+# Fill in missing values with 0
+avocados_filled = avocados_2016.fillna(0)
+
+# Create histograms of the filled columns
+avocados_filled[cols_with_missing].hist()
+
+# Show the plot
+plt.show()
+--->
+test three histogram charts with 0 value 
+
+
+
+
+
+###list dictionary
+# Create a list of dictionaries with new data
+avocados_list = [
+    {'date': '2019-11-03', 'small_sold': 10376832, 'large_sold': 7835071},
+    {'date': '2019-11-10', 'small_sold':10717154,'large_sold': 8561348},
+]
+
+# Convert list into DataFrame
+avocados_2019 = pd.DataFrame(avocados_list)
+
+# Print the new DataFrame
+print(avocados_2019)
+--->
+         date  small_sold  large_sold
+0  2019-11-03    10376832     7835071
+1  2019-11-10    10717154     8561348
+
+
+avocados_dict = {
+  "date": ['2019-11-17','2019-12-01'],
+  "small_sold": [10859987,9291631],
+  "large_sold": [7674135,6238096]
+}
+
+# Convert dictionary into DataFrame
+avocados_2019 = pd.DataFrame(avocados_dict)
+
+# Print the new DataFrame
+print(avocados_2019)
+--->
+         date  small_sold  large_sold
+0  2019-11-17    10859987     7674135
+1  2019-12-01     9291631     6238096
+
+
+
+
+
+
+###Read and write CSV as DataFrame
+# Read CSV as DataFrame called airline_bumping
+airline_bumping = pd.read_csv('airline_bumping.csv')
+
+# Take a look at the DataFrame
+print(airline_bumping.head())
+--->
+             airline  year  nb_bumped  total_passengers
+0    DELTA AIR LINES  2017        679          99796155
+1     VIRGIN AMERICA  2017        165           6090029
+2    JETBLUE AIRWAYS  2017       1475          27255038
+3    UNITED AIRLINES  2017       2067          70030765
+4  HAWAIIAN AIRLINES  2017         92           8422734
+
+
+# Create airline_totals_sorted
+airline_totals_sorted = airline_totals.sort_values('bumps_per_10k',ascending=False)
+
+# Print airline_totals_sorted
+print(airline_totals_sorted)
+
+# Save as airline_totals_sorted.csv
+airline_totals_sorted.to_csv('airline_totals_sorted.csv')
+--->
+                     nb_bumped  total_passengers  bumps_per_10k
+airline                                                        
+EXPRESSJET AIRLINES       3326          27858678          1.194
+SPIRIT AIRLINES           2920          32304571          0.904
+SOUTHWEST AIRLINES       18585         228142036          0.815
+JETBLUE AIRWAYS           3615          53245866          0.679
+SKYWEST AIRLINES          3094          47091737          0.657
+AMERICAN AIRLINES        11115         197365225          0.563
+FRONTIER AIRLINES         1228          22954995          0.535
+ALASKA AIRLINES           1392          36543121          0.381
+UNITED AIRLINES           4941         134468897          0.367
+VIRGIN AMERICA             242          12017967          0.201
+DELTA AIR LINES           1591         197033215          0.081
+HAWAIIAN AIRLINES          122          16577572          0.074
+
+
+
+
